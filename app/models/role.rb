@@ -2,9 +2,7 @@ class Role < ActiveRecord::Base
   has_many :auditions
 
   def actors
-    self.auditions.map do |a|
-      a.actor
-    end
+    self.auditions.map { |a| a.actor }
   end
 
   def locations
@@ -14,18 +12,21 @@ class Role < ActiveRecord::Base
   end
 
   def lead
-    if !auditions.empty?
-      auditions.first
-    else
-      "no actor has been hired for this role"
+    self.auditions.find do |audition|
+      if audition.hired == true
+        audition.hired
+      else
+        puts "no actor has been hired for this role"
+      end
     end
   end
 
   def understudy
-    if !auditions.empty?
-      auditions.second
+    understudy = self.auditions.find_all{|audition| audition.hired == true}[1]
+    if understudy
+      understudy
     else
-      "no actor has been hired for understudy for this role"
+      puts "no actor has been hired for understudy for this role"
     end
   end
 end
